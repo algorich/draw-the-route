@@ -24,8 +24,14 @@
           },
 
           nodes: [],
-
           markers: [],
+
+          newMarker: function () {
+            return new google.maps.Marker({
+              position: new google.maps.LatLng(this.nodes.last()[0], this.nodes.last()[1]),
+              map: map
+            });
+          },
 
           addNode: function (lat, lng) {
             this.nodes.push([lat, lng]);
@@ -34,12 +40,12 @@
           updateMarkers: function() {
             var that = this;
 
-            var marker = new google.maps.Marker({
-              position: new google.maps.LatLng(that.nodes.last()[0], that.nodes.last()[1]),
-              map: map
-            });
+            if(this.markers.length > 1) {
+              var marker = this.markers.pop();
+              marker.setMap(null);
+            }
 
-            this.markers.push(marker);
+            this.markers.push(this.newMarker());
           }
         };
 
