@@ -3,7 +3,10 @@ $(function () {
 });
 
 function initialize() {
-  Array.prototype.last = function() { return this[this.length - 1] }
+  Array.prototype.last = function(offset) {
+    offset = (offset || 1);
+    return this.slice(-offset)[0];
+  }
 
   App = {
     mapOptions: {
@@ -17,13 +20,13 @@ function initialize() {
 
     newMarker: function () {
       return new google.maps.Marker({
-        position: new google.maps.LatLng(this.nodes.last()[0], this.nodes.last()[1]),
+        position: this.nodes.last(),
         map: map
       });
     },
 
-    addNode: function (lat, lng) {
-      this.nodes.push([lat, lng]);
+    addNode: function (node) {
+      this.nodes.push(node);
     },
 
     updateMarkers: function() {
@@ -35,13 +38,26 @@ function initialize() {
       }
 
       this.markers.push(this.newMarker());
+    },
+
+    drawLine: function() {
+      if(this.nodes.length > 1) {
+        return new google.maps.Polyline({
+          path: this.nodes,
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 4,
+          map: map
+        });
+      }
     }
   };
 
   var map = new google.maps.Map(document.getElementById("map_canvas"), App.mapOptions);
 
   google.maps.event.addListener(map, 'click', function(e) {
-    App.addNode(e.latLng.k, e.latLng.B);
+    App.addNode(e.latLng);
+    App.drawLine();
     App.updateMarkers();
   });
 }
