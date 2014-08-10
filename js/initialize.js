@@ -20,6 +20,7 @@ function initialize() {
     },
     nodes: [],
     markers: [],
+    attachToRoad: true,
 
     newMarker: function () {
       return new google.maps.Marker({
@@ -86,9 +87,12 @@ function initialize() {
 
       if (minNodesNumber && !this.closed()) {
         this.addNode(this.nodes.first());
-        this.drawLine();
-        this.drawRoute();
+        this.draw();
       }
+    },
+
+    draw: function () {
+      this.attachToRoad ? this.drawRoute() : this.drawLine();
     }
   };
 
@@ -99,12 +103,19 @@ function initialize() {
 
   google.maps.event.addListener(map, 'click', function(e) {
     App.addNode(e.latLng);
-    App.drawLine();
-    App.drawRoute();
+    App.draw();
     App.updateMarkers();
   });
+
 
   $('#close-route').on('click', function () {
     App.closeRoute();
   });
+
+  $('#attach-to-road').prop('checked', App.attachToRoad);
+
+  $('#attach-to-road').on('change', function () {
+    App.attachToRoad = this.checked;
+  });
+
 }
