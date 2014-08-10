@@ -8,6 +8,10 @@ function initialize() {
     return this.slice(-offset)[0];
   }
 
+  Array.prototype.first = function() {
+    return this[0];
+  }
+
   App = {
     mapOptions: {
       center: new google.maps.LatLng(-15.7941454, -47.88254789999996),
@@ -51,7 +55,7 @@ function initialize() {
 
     drawRoute: function() {
       if(this.nodes.length > 1) {
-        var startPoint = this.nodes[0];
+        var startPoint = this.nodes.first();
         var endPoint   = this.nodes.last();
         var waypoints  = this.nodes.slice(1, this.nodes.length);
 
@@ -71,6 +75,20 @@ function initialize() {
           }
         });
       }
+    },
+
+    closed: function () {
+      return this.nodes.first() == this.nodes.last();
+    },
+
+    closeRoute: function () {
+      var minNodesNumber = this.nodes.length > 2;
+
+      if (minNodesNumber && !this.closed()) {
+        this.addNode(this.nodes.first());
+        this.drawLine();
+        this.drawRoute();
+      }
     }
   };
 
@@ -84,5 +102,9 @@ function initialize() {
     App.drawLine();
     App.drawRoute();
     App.updateMarkers();
+  });
+
+  $('#close-route').on('click', function () {
+    App.closeRoute();
   });
 }
