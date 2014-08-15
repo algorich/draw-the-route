@@ -3,7 +3,7 @@ $(function () {
 });
 
 function initialize() {
-  DrawTheRoute = {
+  DrawTheRoute: {
     nodes: {
       elements: [],
 
@@ -38,7 +38,10 @@ function initialize() {
     },
 
     mapOptions: {
-      center: new google.maps.LatLng(-15.7941454, -47.88254789999996),
+      center: function (position) {
+        return new google.maps.LatLng(position.lt, position.lng),
+      },
+
       zoom: 14,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     },
@@ -49,14 +52,38 @@ function initialize() {
 
     map: undefined,
 
-    node_id: 'map_canvas',
+    nodeId: undefined,
 
-    defineMap: function() {
-      if (this.map === undefined) {
-        this.map = new google.maps.Map(
-          document.getElementById(this.node_id), this.mapOptions
-        );
-      }
+    plottingSettings: {},
+
+    defineDirectionsApi: function () {
+      this.directionsService = new google.maps.DirectionsService();
+      this.directionsDisplay = new google.maps.DirectionsRenderer();
+      this.directionsDisplay.setMap(this.map);
+    },
+
+    defineMap: function () {
+      this.map = new google.maps.Map(
+        document.getElementById(this.nodeId), this.mapOptions
+      );
+    },
+
+    addNode: function (node) {
+      this.nodes.push(node);
+    },
+
+    initialize: function (plottingSettings) {
+      this.plottingSettings = plottingSettings;
+      this.mapOptions.center(plottingSettings.position);
+
+      this.defineMap();
+      this.defineDirectionsApi();
+      this.nodeId = plottingSettings.nodeId;
+
+      google.maps.event.addListener(this.map, 'click', function(e) {
+        DrawTheRoute.addNode(e.latLng);
+        DrawTheRoute.draw();
+      });
     },
 
     newMarker: function () {
@@ -66,17 +93,13 @@ function initialize() {
       });
     },
 
-    addNode: function (node) {
-      this.nodes.push(node);
-    },
-
     updateMarkers: function() {
       var that = this;
 
       if(this.markers.length > 1) {
         var marker = this.markers.pop();
         marker.setMap(null);
-      }
+      };
 
       this.markers.push(this.newMarker());
     },
@@ -99,7 +122,6 @@ function initialize() {
     },
 
     drawRoute: function() {
-      console.log(this.nodes)
       if (this.nodes.size() > 0) {
         var startPoint = this.nodes.first(),
             endPoint   = this.nodes.last(),
@@ -115,9 +137,9 @@ function initialize() {
           unitSystem: google.maps.UnitSystem.IMPERIAL
         }
 
-        directionsService.route(request, function(result, status) {
+        this.directionsService.route(request, function(result, status) {
           if (status == google.maps.DirectionsStatus.OK) {
-            directionsDisplay.setDirections(result);
+            DrawTheRoute.directionsDisplay.setDirections(result);
           }
         });
       }
@@ -148,16 +170,10 @@ function initialize() {
     }
   };
 
-  DrawTheRoute.defineMap();
-  var directionsService = new google.maps.DirectionsService();
-  var directionsDisplay = new google.maps.DirectionsRenderer();
-  directionsDisplay.setMap(DrawTheRoute.map);
-
-  google.maps.event.addListener(DrawTheRoute.map, 'click', function(e) {
-    DrawTheRoute.addNode(e.latLng);
-    DrawTheRoute.draw();
+  DrawTheRoute.initialize({
+    nodeId:   'map_canvas',
+    location: { lt: -15.7941454, lng: -47.88254789999996 }
   });
-  // map = drawTheRoute('id-do-map', {});
 
   $('#close-route').on('click', function () {
     DrawTheRoute.closeRoute();
