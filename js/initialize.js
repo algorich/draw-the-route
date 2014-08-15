@@ -3,39 +3,60 @@ $(function () {
 });
 
 function initialize() {
-  Array.prototype.last = function(offset) {
-    offset = (offset || 1);
-    return this.slice(-offset)[0];
-  }
+  DrawTheRoute = {
+    nodes: {
+      elements: [],
 
-  Array.prototype.first = function() {
-    return this[0];
-  }
+      last: function (offset) {
+        offset = (offset || 1);
+        return this.elements.slice(-offset)[0];
+      },
 
-  App = {
+      first: function () {
+        return this.elements[0];
+      },
+
+      all: function () {
+        return this.elements;
+      },
+
+      waypoints: function () {
+        return this.elements.slice(1, this.size());
+      },
+
+      size: function () {
+        return this.elements.length;
+      },
+
+      push: function (elem) {
+        this.elements.push(elem);
+      },
+
+      pop: function () {
+        return this.elements.pop();
+      }
+    },
+
     mapOptions: {
       center: new google.maps.LatLng(-15.7941454, -47.88254789999996),
       zoom: 14,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     },
 
-    nodes: [],
-
     markers: [],
 
     attachToRoad: true,
 
-    _map: undefined,
+    map: undefined,
 
     node_id: 'map_canvas',
 
-    map: function() {
-      if (this._map === undefined) {
-        this._map = new google.maps.Map(
+    defineMap: function() {
+      if (this.map === undefined) {
+        this.map = new google.maps.Map(
           document.getElementById(this.node_id), this.mapOptions
         );
       }
-      return this._map;
     },
 
     newMarker: function () {
@@ -67,7 +88,7 @@ function initialize() {
       }
 
       this.route = new google.maps.Polyline({
-        path: this.nodes,
+        path: this.nodes.all(),
         strokeColor: "#FF0000",
         strokeOpacity: 1.0,
         strokeWeight: 2,
@@ -78,10 +99,11 @@ function initialize() {
     },
 
     drawRoute: function() {
-      if (this.nodes.length > 0) {
+      console.log(this.nodes)
+      if (this.nodes.size() > 0) {
         var startPoint = this.nodes.first(),
             endPoint   = this.nodes.last(),
-            waypoints  = this.nodes.slice(1, this.nodes.length);
+            waypoints  = this.nodes.waypoints();
 
         var request = {
           origin: startPoint,
@@ -110,7 +132,7 @@ function initialize() {
     },
 
     closeRoute: function () {
-      var minNodesNumber = this.nodes.length > 2;
+      var minNodesNumber = this.nodes.size() > 2;
 
       if (minNodesNumber && !this.closed()) {
         this.addNode(this.nodes.first());
@@ -119,36 +141,35 @@ function initialize() {
     },
 
     undo: function () {
-      if (this.nodes.length > 0) {
+      if (this.nodes.size() > 0) {
         this.nodes.pop();
         this.draw();
       }
     }
   };
 
+  DrawTheRoute.defineMap();
   var directionsService = new google.maps.DirectionsService();
   var directionsDisplay = new google.maps.DirectionsRenderer();
-  directionsDisplay.setMap(App.map());
+  directionsDisplay.setMap(DrawTheRoute.map);
 
-  google.maps.event.addListener(App.map(), 'click', function(e) {
-    App.addNode(e.latLng);
-    App.draw();
+  google.maps.event.addListener(DrawTheRoute.map, 'click', function(e) {
+    DrawTheRoute.addNode(e.latLng);
+    DrawTheRoute.draw();
   });
-
-
   // map = drawTheRoute('id-do-map', {});
 
   $('#close-route').on('click', function () {
-    App.closeRoute();
+    DrawTheRoute.closeRoute();
   });
 
-  $('#attach-to-road').prop('checked', App.attachToRoad);
+  $('#attach-to-road').prop('checked', DrawTheRoute.attachToRoad);
 
   $('#attach-to-road').on('change', function () {
-    App.attachToRoad = this.checked;
+    DrawTheRoute.attachToRoad = this.checked;
   });
 
   $('#undo').on('click', function () {
-    App.undo();
+    DrawTheRoute.undo();
   });
 }
