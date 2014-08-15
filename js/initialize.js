@@ -1,5 +1,5 @@
 $(function () {
-  initialize()
+  initialize();
 });
 
 function initialize() {
@@ -45,20 +45,27 @@ function initialize() {
     },
 
     drawLine: function() {
-      return new google.maps.Polyline({
-          path: this.nodes,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2,
-          map: map
-        });
+      if (this.route !== undefined) {
+        this.route.setMap(null);
+        delete(this.route);
+      }
+
+      this.route = new google.maps.Polyline({
+        path: this.nodes,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        map: map
+      });
+
+      this.updateMarkers();
     },
 
     drawRoute: function() {
-      if(this.nodes.length > 1) {
-        var startPoint = this.nodes.first();
-        var endPoint   = this.nodes.last();
-        var waypoints  = this.nodes.slice(1, this.nodes.length);
+      if (this.nodes.length > 0) {
+        var startPoint = this.nodes.first(),
+            endPoint   = this.nodes.last(),
+            waypoints  = this.nodes.slice(1, this.nodes.length);
 
         var request = {
           origin: startPoint,
@@ -78,6 +85,10 @@ function initialize() {
       }
     },
 
+    draw: function () {
+      this.attachToRoad ? this.drawRoute() : this.drawLine();
+    },
+
     closed: function () {
       return this.nodes.first() == this.nodes.last();
     },
@@ -91,8 +102,11 @@ function initialize() {
       }
     },
 
-    draw: function () {
-      this.attachToRoad ? this.drawRoute() : this.drawLine();
+    undo: function () {
+      if (this.nodes.length > 0) {
+        this.nodes.pop();
+        this.draw();
+      }
     }
   };
 
@@ -104,7 +118,6 @@ function initialize() {
   google.maps.event.addListener(map, 'click', function(e) {
     App.addNode(e.latLng);
     App.draw();
-    App.updateMarkers();
   });
 
 
@@ -118,4 +131,7 @@ function initialize() {
     App.attachToRoad = this.checked;
   });
 
+  $('#undo').on('click', function () {
+    App.undo();
+  });
 }
