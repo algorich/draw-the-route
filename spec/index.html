@@ -13,7 +13,7 @@
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?sensor=false">
     </script>
-    <script type="text/javascript" src="../js/initialize.js"> </script>
+    <script type="text/javascript" src="../lib/jquery.draw-the-route.js"> </script>
   </head>
   <body>
     <div id="map_canvas" style="width:100%; height:80%"></div>
@@ -26,5 +26,27 @@
 
       <button id="undo">Undo</button>
     </div>
+
+    <script type="text/javascript">
+      $(function () {
+        'use strict';
+
+        var dtr = $('#map_canvas').drawTheRoute();
+
+        $('#close-route').on('click', function () {
+          dtr.closeRoute();
+        });
+
+        $('#attach-to-road').prop('checked', dtr.attachToRoad());
+
+        $('#attach-to-road').on('change', function () {
+          dtr.attachToRoad(this.checked);
+        });
+
+        $('#undo').on('click', function () {
+          dtr.undo();
+        });
+      });
+    </script>
   </body>
 </html>
