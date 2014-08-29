@@ -25,6 +25,10 @@
       <input type="checkbox" id="attach-to-road">
 
       <button id="undo">Undo</button>
+
+      <button id="export-data">Export data</button>
+
+      <textarea cols='50' rows='3' id="agl-exported-data"></textarea>
     </div>
 
     <script type="text/javascript">
@@ -45,6 +49,10 @@
 
         $('#undo').on('click', function () {
           dtr.undo();
+        });
+
+        $('#export-data').on('click', function () {
+          $('#agl-exported-data').text(JSON.stringify(dtr.exportData()));
         });
       });
     </script>
