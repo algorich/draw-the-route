@@ -20,9 +20,12 @@ npm install
 grunt
 ```
 
-## Generate package
+It will run the jasmine specs.
 
+## Build
 
 ```
 grunt uglify
 ```
+
+It will generate the minified version on the build dir.

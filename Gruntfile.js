@@ -14,10 +14,19 @@ module.exports = function(grunt) {
     jasmine : {
       // Your project's source files
       src : 'src/**/*.js',
-      // Your Jasmine spec files
-      specs : 'specs/**/*spec.js',
-      // Your spec helper files
-      helpers : 'specs/helpers/*.js'
+      options: {
+        // Your Jasmine spec files
+        specs : 'specs/**/*spec.js',
+        
+        // Your spec helper files
+        helpers : 'specs/helpers/*.js',
+
+        vendor: [
+          'vendor/jquery.js',
+          'vendor/jasmine-jquery.js',
+          'http://maps.googleapis.com/maps/api/js?sensor=false'
+        ]
+      }
     }
   });
 

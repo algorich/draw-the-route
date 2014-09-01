@@ -9,7 +9,7 @@
         zoom: 14,
         center: [-15.7941454, -47.88254789999996], // [latitude, longitude]
         attachToRoad: true,
-        lineColor: "#FF0000",
+        lineColor: '#FF0000',
         nodes: [],
     }, options );
 
