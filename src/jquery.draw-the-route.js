@@ -28,13 +28,13 @@
 
       map: map,
 
-      markers: [],
-
       directionsService: new google.maps.DirectionsService(),
 
       directionsDisplay: new google.maps.DirectionsRenderer({
         preserveViewport: true
       }),
+
+      markers: [],
 
       nodes: {
         elements: [],
