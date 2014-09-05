@@ -1,13 +1,10 @@
 jasmine.getFixtures().fixturesPath = 'specs/fixtures';
 
-describe('The initialization', function() {
-
 describe('Settings initialization', function() {
   beforeEach(function() {
     loadFixtures('example.html');
   });
 
-  it('set default settings', function() {
   it('default settings', function() {
     var dtr = $('#map-canvas').drawTheRoute();
 
@@ -67,5 +64,49 @@ describe('Google Maps Objects Initialization', function () {
 
   it('has markers list', function () {
     expect(this.dtr.markers).toEqual([]);
+  });
+});
+
+describe('Nodes object functions', function () {
+  beforeEach(function() {
+    loadFixtures('example.html');
+
+    this.dtr = $('#map-canvas').drawTheRoute();
+
+    this.dtr.nodes.elements = [1, 3, 4]
+  });
+
+  describe('last', function () {
+    it('without params', function () {
+      expect(this.dtr.nodes.last()).toEqual(4)
+    });
+
+    it('with params', function () {
+      expect(this.dtr.nodes.last(2)).toEqual(3)
+    });
+  });
+
+  it('first', function () {
+    expect(this.dtr.nodes.first()).toEqual(1)
+  });
+
+  it('all', function () {
+    expect(this.dtr.nodes.all()).toEqual([1, 3, 4])
+  });
+
+  it('waypoints', function () {
+    expect(this.dtr.nodes.waypoints()).toEqual([3, 4])
+  });
+
+  it('push', function () {
+    this.dtr.nodes.push(10);
+
+    expect(this.dtr.nodes.elements).toEqual([1, 3, 4, 10])
+  });
+
+  it('pop', function () {
+    this.dtr.nodes.pop();
+
+    expect(this.dtr.nodes.elements).toEqual([1, 3])
   });
 });
