@@ -1,11 +1,18 @@
+/*global jasmine*/
+/*global it*/
+/*global describe*/
+/*global beforeEach*/
+/*global expect*/
+/*global loadFixtures*/
+
 jasmine.getFixtures().fixturesPath = 'specs/fixtures';
 
-describe('Settings initialization', function() {
-  beforeEach(function() {
+describe('Settings initialization', function () {
+  beforeEach(function () {
     loadFixtures('example.html');
   });
 
-  it('default settings', function() {
+  it('default settings', function () {
     var dtr = $('#map-canvas').drawTheRoute();
 
     expect(dtr.settings.zoom).toEqual(14);
@@ -15,14 +22,14 @@ describe('Settings initialization', function() {
     expect(dtr.settings.nodes).toEqual([]);
   });
 
-  it('can receive settings', function() {
+  it('can receive settings', function () {
     var dtr = $('#map-canvas').drawTheRoute({
       zoom: 10,
       center: [-14.44, -47.88],
       attachToRoad: false,
       lineColor: 'blue',
       nodes: [
-        [-15.79,-47.89],[-15.70,-47.87]
+        [-15.79, -47.89], [-15.70, -47.87]
       ],
     });
 
@@ -30,12 +37,12 @@ describe('Settings initialization', function() {
     expect(dtr.settings.center).toEqual([-14.44, -47.88]);
     expect(dtr.settings.attachToRoad).toEqual(false);
     expect(dtr.settings.lineColor).toEqual('blue');
-    expect(dtr.settings.nodes).toEqual([[-15.79,-47.89],[-15.70,-47.87]]);
+    expect(dtr.settings.nodes).toEqual([[-15.79, -47.89], [-15.70, -47.87]]);
   });
 });
 
 describe('Google Maps Objects Initialization', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     loadFixtures('example.html');
 
     this.dtr = $('#map-canvas').drawTheRoute();
@@ -68,7 +75,7 @@ describe('Google Maps Objects Initialization', function () {
 });
 
 describe('Nodes object functions', function () {
-  beforeEach(function() {
+  beforeEach(function () {
     loadFixtures('example.html');
 
     this.dtr = $('#map-canvas').drawTheRoute();
