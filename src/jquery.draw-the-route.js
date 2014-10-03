@@ -23,7 +23,6 @@
     );
 
     var DrawTheRoute = {
-
       settings: settings,
 
       map: map,
@@ -31,10 +30,60 @@
       directionsService: new google.maps.DirectionsService(),
 
       directionsDisplay: new google.maps.DirectionsRenderer({
-        preserveViewport: true
+        preserveViewport: true,
+        suppressMarkers: true
       }),
 
-      markers: [],
+      markers: {
+        icons: {
+          startFinish: new google.maps.MarkerImage('lib/images/start_finish_flag.png'),
+          start:       new google.maps.MarkerImage('lib/images/green_flag.png'),
+          end:         new google.maps.MarkerImage('lib/images/red_flag.png')
+        },
+
+        elements: [],
+        type: undefined,
+
+        create: function ( position ) {
+          this.elements.push(
+            new google.maps.Marker({
+              position: position || DrawTheRoute.nodes.last(),
+              map: DrawTheRoute.map,
+              icon: baseIcon
+            })
+          );
+        },
+
+        // types of markers:
+        //
+        // start/finish: when it has one marker, or when start and finish points are the same
+        // start: when it has more then one marker and it is the first marker
+        // finish: when it has more than one marker and it is the last one
+        // checkpoint and water are setted by a given param
+        //
+        setType: function (type) {
+          if ((DrawTheRoute.nodes.first() == DrawTheRoute.nodes.last()) || (DrawTheRoute.nodes.length === 1)){
+            return 'start-finish';
+          } else if ()
+        },
+
+        update: function ( position ) {
+          if (DrawTheRoute.nodes.elements.length === 1) {
+            this.create(type: 'startFinish');
+
+          } else if (DrawTheRoute.nodes.elements.length === 2) {
+            this.create(type: 'start');
+            this.create(type: 'finish');
+
+          } else {
+            var marker = this.markers.pop();
+            marker.setMap(null);
+
+            // maintain start point
+            this.create(type: 'finish');
+          }
+        },
+      },
 
       nodes: {
         elements: [],
@@ -76,27 +125,10 @@
       },
 
       attachToRoad: function (param) {
-        if (param === undefined) {
+        if (param === undefined)
           return settings.attachToRoad;
-        } else {
+        else
           settings.attachToRoad = param;
-        }
-      },
-
-      newMarker: function () {
-        return new google.maps.Marker({
-          position: this.nodes.last(),
-          map: this.map
-        });
-      },
-
-      updateMarkers: function() {
-        if(this.markers.length > 1) {
-          var marker = this.markers.pop();
-          marker.setMap(null);
-        }
-
-        this.markers.push(this.newMarker());
       },
 
       drawLine: function() {
@@ -113,7 +145,7 @@
           map: this.map
         });
 
-        this.updateMarkers();
+        this.markers.update();
       },
 
       drawRoute: function() {
@@ -137,6 +169,11 @@
           this.directionsService.route(request, function(result, status) {
             if (status === google.maps.DirectionsStatus.OK) {
               self.directionsDisplay.setDirections(result);
+
+              var path = result.routes[ 0 ].legs[ 0 ];
+
+              DrawTheRoute.markers.update( path.start_location );
+              DrawTheRoute.markers.update( path.end_location );
             }
           });
         }
