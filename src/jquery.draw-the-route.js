@@ -42,16 +42,21 @@
         },
 
         elements: [],
-        type: undefined,
+
+
+        show: function ( position ) {
+          this.update();
+          this.create(position);
+        },
 
         create: function ( position ) {
           this.elements.push(
             new google.maps.Marker({
               position: position || DrawTheRoute.nodes.last(),
               map: DrawTheRoute.map,
-              icon: baseIcon
+              icon: this.icon
             })
-          );
+          )
         },
 
         // types of markers:
@@ -61,26 +66,29 @@
         // finish: when it has more than one marker and it is the last one
         // checkpoint and water are setted by a given param
         //
-        setType: function (type) {
-          if ((DrawTheRoute.nodes.first() == DrawTheRoute.nodes.last()) || (DrawTheRoute.nodes.length === 1)){
-            return 'start-finish';
-          } else if ()
+        cleanPrevious: function ( ) {
+          if (this.elements.length >= 1) {
+            this.marker = this.elements.pop();
+            this.marker.setMap(null);
+          };
         },
 
-        update: function ( position ) {
+        update: function ( ) {
           if (DrawTheRoute.nodes.elements.length === 1) {
-            this.create(type: 'startFinish');
+            this.cleanPrevious();
+            this.icon = this.icons.startFinish;
 
           } else if (DrawTheRoute.nodes.elements.length === 2) {
-            this.create(type: 'start');
-            this.create(type: 'finish');
+            this.cleanPrevious();
+
+            this.icon = this.icons.start;
+
+            this.create(DrawTheRoute.nodes.first());
+            this.icon = this.icons.end;
 
           } else {
-            var marker = this.markers.pop();
-            marker.setMap(null);
+            this.cleanPrevious();
 
-            // maintain start point
-            this.create(type: 'finish');
           }
         },
       },
@@ -145,7 +153,7 @@
           map: this.map
         });
 
-        this.markers.update();
+        this.markers.show();
       },
 
       drawRoute: function() {
@@ -172,8 +180,8 @@
 
               var path = result.routes[ 0 ].legs[ 0 ];
 
-              DrawTheRoute.markers.update( path.start_location );
-              DrawTheRoute.markers.update( path.end_location );
+              DrawTheRoute.markers.show( path.start_location );
+              DrawTheRoute.markers.show( path.end_location );
             }
           });
         }
