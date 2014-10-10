@@ -43,52 +43,31 @@
 
         elements: [],
 
-
-        show: function ( position ) {
-          this.update();
-          this.create(position);
-        },
-
-        create: function ( position ) {
+        create: function ( position, icon ) {
           this.elements.push(
             new google.maps.Marker({
               position: position || DrawTheRoute.nodes.last(),
               map: DrawTheRoute.map,
-              icon: this.icon
+              icon: icon
             })
-          )
+          );
         },
 
-        // types of markers:
-        //
-        // start/finish: when it has one marker, or when start and finish points are the same
-        // start: when it has more then one marker and it is the first marker
-        // finish: when it has more than one marker and it is the last one
-        // checkpoint and water are setted by a given param
-        //
-        cleanPrevious: function ( ) {
-          if (this.elements.length >= 1) {
-            this.marker = this.elements.pop();
-            this.marker.setMap(null);
-          };
+        clean: function () {
+          $.each(this.elements, function(i, item) {
+            item.setMap(null);
+          });
+          this.elements = [];
         },
 
-        update: function ( ) {
-          if (DrawTheRoute.nodes.elements.length === 1) {
-            this.cleanPrevious();
-            this.icon = this.icons.startFinish;
+        show: function () {
+          this.clean();
 
-          } else if (DrawTheRoute.nodes.elements.length === 2) {
-            this.cleanPrevious();
-
-            this.icon = this.icons.start;
-
-            this.create(DrawTheRoute.nodes.first());
-            this.icon = this.icons.end;
-
+          if (DrawTheRoute.nodes.first() == DrawTheRoute.nodes.last()) {
+            this.create(DrawTheRoute.nodes.first(), this.icons.startFinish);
           } else {
-            this.cleanPrevious();
-
+            this.create(DrawTheRoute.nodes.first(), this.icons.start);
+            this.create(DrawTheRoute.nodes.last(), this.icons.end);
           }
         },
       },
@@ -178,10 +157,7 @@
             if (status === google.maps.DirectionsStatus.OK) {
               self.directionsDisplay.setDirections(result);
 
-              var path = result.routes[ 0 ].legs[ 0 ];
-
-              DrawTheRoute.markers.show( path.start_location );
-              DrawTheRoute.markers.show( path.end_location );
+              DrawTheRoute.markers.show();
             }
           });
         }
