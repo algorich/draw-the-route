@@ -157,10 +157,11 @@
             if (status === google.maps.DirectionsStatus.OK) {
               self.directionsDisplay.setDirections(result);
 
-              DrawTheRoute.markers.show();
             }
           });
         }
+
+        DrawTheRoute.markers.show();
       },
 
       draw: function () {
