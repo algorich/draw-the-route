@@ -30,11 +30,9 @@
       directionsService: new google.maps.DirectionsService(),
 
       insertDirectionsDisplay: function() {
-        console.log('---> insert begin');
-        console.log("nodes / 8: " + DrawTheRoute.nodes.elements.length / 8.0 + ' | displays: ' + DrawTheRoute.directionsDisplays.length);
+        var waypointsCount = DrawTheRoute.nodes.elements.length + DrawTheRoute.directionsDisplays.length - 1;
 
-        if ((DrawTheRoute.nodes.elements.length / 8.0) >= DrawTheRoute.directionsDisplays.length) {
-          console.log('entrou no if');
+        if (( waypointsCount / 8.0) >= DrawTheRoute.directionsDisplays.length) {
           var directionsDisplay = new google.maps.DirectionsRenderer({
             preserveViewport: true,
             suppressMarkers: true
@@ -43,8 +41,6 @@
           directionsDisplay.setMap(DrawTheRoute.map);
           DrawTheRoute.directionsDisplays.push(directionsDisplay);
         }
-
-        console.log('<--- insert end');
       },
 
       directionsDisplays: [],
@@ -87,6 +83,9 @@
         },
       },
 
+
+      waypointsCount: 0,
+
       nodes: {
         elements: [],
 
@@ -121,6 +120,9 @@
             list = this.elements.slice(lower, upper);
           }
 
+          DrawTheRoute.waypointsCount = waypoints.
+            map(function(i){ return i.length; }).
+            reduce(function(j, k){ return j + k; });
           return waypoints;
         },
 
@@ -181,7 +183,6 @@
 
         DrawTheRoute.directionsService.route(request, function(result, status) {
           if (status === google.maps.DirectionsStatus.OK) {
-            console.log('index: ' + i);
             DrawTheRoute.directionsDisplays[i].setDirections(result);
           }
         });
@@ -190,7 +191,6 @@
       drawRoute: function() {
         if (this.nodes.size() >= 2) {
           var allWaypoints = DrawTheRoute.nodes.buildWaypointsList();
-          console.log(allWaypoints);
           $.each(allWaypoints, function (i, waypoints) {
             DrawTheRoute.createRoadRoute(waypoints, i);
           });
