@@ -101,9 +101,9 @@ describe('Nodes object functions', function () {
     expect(this.dtr.nodes.all()).toEqual([1, 3, 4]);
   });
 
-  it('waypoints', function () {
-    expect(this.dtr.nodes.waypoints()).toEqual([3, 4]);
-  });
+  // it('waypoints', function () {
+  //   expect(this.dtr.nodes.waypoints()).toEqual([3, 4]);
+  // });
 
   it('push', function () {
     this.dtr.nodes.push(10);
@@ -118,18 +118,45 @@ describe('Nodes object functions', function () {
   });
 
   describe('buildWaypointsList', function () {
-    it('with 20 nodes', function () {
+    it('with 1 nodes', function () {
+      this.dtr.nodes.elements = [1];
 
-      this.dtr.nodes.elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                 13, 14, 15, 16, 17, 18, 19, 20];
+      expect(this.dtr.nodes.buildWaypointsList()).toEqual([]);
+    });
+
+    it('with 2 nodes', function () {
+      this.dtr.nodes.elements = [1, 2];
 
       expect(this.dtr.nodes.buildWaypointsList()).toEqual(
         [
-          [ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10],
-          [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-          [20]
+          [1, 2]
         ]
-      )
+      );
+    });
+
+    it('with 15 nodes', function () {
+      this.dtr.nodes.elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                 11, 12, 13, 14, 15];
+
+      expect(this.dtr.nodes.buildWaypointsList()).toEqual(
+        [
+          [1,  2,  3,  4,  5,  6,  7,  8],
+          [8,  9, 10, 11, 12, 13, 14, 15]
+        ]
+      );
+    });
+
+    it('with 16 nodes', function () {
+      this.dtr.nodes.elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                 11, 12, 13, 14, 15, 16];
+
+      expect(this.dtr.nodes.buildWaypointsList()).toEqual(
+        [
+          [1,  2,  3,  4,  5,  6,  7,  8],
+          [8,  9, 10, 11, 12, 13, 14, 15],
+          [15, 16]
+        ]
+      );
     });
   });
 });
