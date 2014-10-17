@@ -116,4 +116,20 @@ describe('Nodes object functions', function () {
 
     expect(this.dtr.nodes.elements).toEqual([1, 3]);
   });
+
+  describe('buildWaypointsList', function () {
+    it('with 20 nodes', function () {
+
+      this.dtr.nodes.elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                 13, 14, 15, 16, 17, 18, 19, 20];
+
+      expect(this.dtr.nodes.buildWaypointsList()).toEqual(
+        [
+          [ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10],
+          [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+          [20]
+        ]
+      )
+    });
+  });
 });

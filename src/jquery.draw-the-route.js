@@ -88,8 +88,39 @@
           return this.elements;
         },
 
+        buildWaypointsList: function () {
+          // lógica para split de lista de waypoints
+
+          // var arrays = [], size = 3;
+
+          // while (a.length > 0)
+          //     arrays.push(a.splice(0, size));
+        },
+
         waypoints: function () {
-          return this.elements.slice(1, this.size());
+          var elems = [];
+
+          if (this.size() < 8) {
+            elems = this.elements.slice(1, this.size());
+            this.all_waypoints[0] = elems;
+          } else {
+            elems = this.elements.slice(7, this.size());
+            this.all_waypoints[1] = elems;
+          }
+
+          return elems;
+        },
+
+        first_waypoint: function () {
+          if (this.size() < 8) {
+            return this.first();
+          } else {
+            return this.waypoints()[0];
+          }
+        },
+
+        last_waypoint: function () {
+          return this.last();
         },
 
         size: function () {
@@ -139,9 +170,32 @@
         var self = this;
 
         if (this.nodes.size() > 0) {
-          var startPoint = this.nodes.first(),
-              endPoint   = this.nodes.last(),
+          var startPoint = this.nodes.first_waypoint(),
+              endPoint   = this.nodes.last_waypoint(),
               waypoints  = this.nodes.waypoints();
+
+          console.log(startPoint);
+          console.log(endPoint);
+          console.log(waypoints);
+
+          // if (this.nodes.size() == 8) {
+          //   // rebuilding old waypoints
+          //   var request = {
+          //     origin: startPoint,
+          //     destination: endPoint,
+          //     waypoints: $.map(this.nodes.all_waypoints[0], function(waypoint) {
+          //       return { location: waypoint, stopover: false };
+          //     }),
+          //     travelMode: google.maps.TravelMode.WALKING,
+          //     unitSystem: google.maps.UnitSystem.IMPERIAL
+          //   };
+
+          //   this.directionsService.route(request, function(result, status) {
+          //     if (status === google.maps.DirectionsStatus.OK) {
+          //       self.directionsDisplay.setDirections(result);
+          //     }
+          //   });
+          // }
 
           var request = {
             origin: startPoint,
@@ -156,7 +210,6 @@
           this.directionsService.route(request, function(result, status) {
             if (status === google.maps.DirectionsStatus.OK) {
               self.directionsDisplay.setDirections(result);
-
             }
           });
         }
