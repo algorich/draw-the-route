@@ -66,11 +66,11 @@ describe('Google Maps Objects Initialization', function () {
   });
 
   it('has directionsDisplay object', function () {
-    expect(this.dtr.directionsDisplay).toEqual(jasmine.any(Object));
+    expect(this.dtr.directionsDisplays).toEqual([]);
   });
 
-  it('has markers list', function () {
-    expect(this.dtr.markers).toEqual([]);
+  it('has markers object', function () {
+    expect(this.dtr.markers).toEqual(jasmine.any(Object));
   });
 });
 

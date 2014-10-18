@@ -120,9 +120,9 @@
             list = this.elements.slice(lower, upper);
           }
 
-          DrawTheRoute.waypointsCount = waypoints.
-            map(function(i){ return i.length; }).
-            reduce(function(j, k){ return j + k; });
+          // DrawTheRoute.waypointsCount = waypoints.
+          //   map(function(i){ return i.length; }).
+          //   reduce(function(j, k){ return j + k; });
           return waypoints;
         },
 
