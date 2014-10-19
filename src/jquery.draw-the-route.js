@@ -5,6 +5,14 @@
 
   $.fn.drawTheRoute = function (options) {
 
+    var first = function (array) {
+      return array[0];
+    };
+
+    var last = function (array) {
+      return array[array.length - 1];
+    };
+
     var settings = $.extend({
         zoom: 14,
         center: [-15.7941454, -47.88254789999996], // [latitude, longitude]
@@ -30,20 +38,42 @@
       directionsService: new google.maps.DirectionsService(),
 
       insertDirectionsDisplay: function() {
-        var waypointsCount = DrawTheRoute.nodes.elements.length + DrawTheRoute.directionsDisplays.length - 1;
+        var directionsDisplay = new google.maps.DirectionsRenderer({
+          preserveViewport: true,
+          suppressMarkers: true
+        });
 
-        if (( waypointsCount / 8.0) >= DrawTheRoute.directionsDisplays.length) {
-          var directionsDisplay = new google.maps.DirectionsRenderer({
-            preserveViewport: true,
-            suppressMarkers: true
-          });
-
-          directionsDisplay.setMap(DrawTheRoute.map);
-          DrawTheRoute.directionsDisplays.push(directionsDisplay);
-        }
+        directionsDisplay.setMap(DrawTheRoute.map);
+        DrawTheRoute.directionsDisplays.push(directionsDisplay);
       },
 
       directionsDisplays: [],
+
+      waypoints: {
+        SIZE_LIMIT: 8,
+
+        elements: [],
+
+        count: 0,
+
+        push: function (waypoint) {
+          var lastWaypoints = last(this.elements);
+
+          if (lastWaypoints === undefined) {
+            this.elements.push([waypoint]);
+            DrawTheRoute.insertDirectionsDisplay();
+          } else if (lastWaypoints.length < 8) {
+            this.elements[this.elements.length - 1].push(waypoint);
+          } else { // lastWaypoints.length === 8
+            this.elements.push([last(lastWaypoints), waypoint]);
+            DrawTheRoute.insertDirectionsDisplay();
+          }
+        },
+
+        pop: function () {
+          // for undo
+        }
+      },
 
       markers: {
         icons: {
@@ -83,9 +113,6 @@
         },
       },
 
-
-      waypointsCount: 0,
-
       nodes: {
         elements: [],
 
@@ -120,9 +147,6 @@
             list = this.elements.slice(lower, upper);
           }
 
-          // DrawTheRoute.waypointsCount = waypoints.
-          //   map(function(i){ return i.length; }).
-          //   reduce(function(j, k){ return j + k; });
           return waypoints;
         },
 
@@ -132,7 +156,7 @@
 
         push: function (elem) {
           this.elements.push(elem);
-          DrawTheRoute.insertDirectionsDisplay();
+          DrawTheRoute.waypoints.push(elem);
         },
 
         pop: function () {
