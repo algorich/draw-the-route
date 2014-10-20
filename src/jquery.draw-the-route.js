@@ -260,10 +260,9 @@
 
     (function initializeNodes () {
       var elements = $.map(settings.nodes, function (node) {
-        return new google.maps.LatLng(node[0], node[1]);
+        DrawTheRoute.nodes.push(new google.maps.LatLng(node[0], node[1]));
       });
 
-      DrawTheRoute.nodes.elements = elements;
       DrawTheRoute.draw();
     }());
 
