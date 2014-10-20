@@ -37,17 +37,28 @@
 
       directionsService: new google.maps.DirectionsService(),
 
-      insertDirectionsDisplay: function() {
-        var directionsDisplay = new google.maps.DirectionsRenderer({
-          preserveViewport: true,
-          suppressMarkers: true
-        });
+      directionsDisplays: {
+        elements: [],
 
-        directionsDisplay.setMap(DrawTheRoute.map);
-        DrawTheRoute.directionsDisplays.push(directionsDisplay);
+        pop: function () {
+          var display = this.elements.pop();
+
+          if (display) {
+            display.setMap(null);
+            return display;
+          }
+        },
+
+        create: function() {
+          var display = new google.maps.DirectionsRenderer({
+            preserveViewport: true,
+            suppressMarkers: true
+          });
+
+          display.setMap(DrawTheRoute.map);
+          this.elements.push(display);
+        },
       },
-
-      directionsDisplays: [],
 
       waypoints: {
         SIZE_LIMIT: 8,
@@ -61,17 +72,29 @@
 
           if (lastWaypoints === undefined) {
             this.elements.push([waypoint]);
-            DrawTheRoute.insertDirectionsDisplay();
+            DrawTheRoute.directionsDisplays.create();
           } else if (lastWaypoints.length < 8) {
             this.elements[this.elements.length - 1].push(waypoint);
           } else { // lastWaypoints.length === 8
             this.elements.push([last(lastWaypoints), waypoint]);
-            DrawTheRoute.insertDirectionsDisplay();
+            DrawTheRoute.directionsDisplays.create();
           }
         },
 
         pop: function () {
-          // for undo
+          var lastWaypoints = last(this.elements),
+              waypoint;
+
+          if (lastWaypoints === undefined) {
+            return null;
+          } else if (lastWaypoints.length <= 2) {
+            this.elements.pop();
+            waypoint = DrawTheRoute.directionsDisplays.pop();
+          } else {
+            waypoint = this.elements[this.elements.length - 1].pop();
+          }
+
+          return waypoint;
         }
       },
 
@@ -129,27 +152,6 @@
           return this.elements;
         },
 
-        buildWaypointsList: function () {
-          // This limit is defined by Google. The maximum waypoint for each
-          // route calculation is 10. So, we split the waypoint in arrays of 10
-          // elements and make multiple calls.
-          var WAYPOINTS_SIZE_LIMIT = 8;
-
-          var lower = 0;
-          var upper = WAYPOINTS_SIZE_LIMIT;
-          var waypoints = [];
-          var list = this.elements.slice(lower, upper);
-
-          while(list.length >= 2) {
-            waypoints.push(list);
-            lower += WAYPOINTS_SIZE_LIMIT - 1;
-            upper += WAYPOINTS_SIZE_LIMIT - 1;
-            list = this.elements.slice(lower, upper);
-          }
-
-          return waypoints;
-        },
-
         size: function () {
           return this.elements.length;
         },
@@ -160,6 +162,7 @@
         },
 
         pop: function () {
+          DrawTheRoute.waypoints.pop();
           return this.elements.pop();
         },
 
@@ -206,16 +209,17 @@
         };
 
         DrawTheRoute.directionsService.route(request, function(result, status) {
+          console.log(status);
           if (status === google.maps.DirectionsStatus.OK) {
-            DrawTheRoute.directionsDisplays[i].setDirections(result);
+            DrawTheRoute.directionsDisplays.elements[i].setDirections(result);
           }
         });
       },
 
       drawRoute: function() {
         if (this.nodes.size() >= 2) {
-          var allWaypoints = DrawTheRoute.nodes.buildWaypointsList();
-          $.each(allWaypoints, function (i, waypoints) {
+          var waypoints = DrawTheRoute.waypoints.elements;
+          $.each(waypoints, function (i, waypoints) {
             DrawTheRoute.createRoadRoute(waypoints, i);
           });
         }
