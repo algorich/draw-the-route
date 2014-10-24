@@ -49,6 +49,12 @@
           }
         },
 
+        showAll: function () {
+          $.each(this.elements, function (i, display) {
+            display.setMap(DrawTheRoute.map)
+          });
+        },
+
         create: function() {
           var display = new google.maps.DirectionsRenderer({
             preserveViewport: true,
@@ -121,6 +127,7 @@
           $.each(this.elements, function(i, item) {
             item.setMap(null);
           });
+
           this.elements = [];
         },
 
@@ -173,11 +180,26 @@
         }
       },
 
+      toggleRoute: function (checked) {
+        if (checked === false) {
+          $.map(DrawTheRoute.directionsDisplays.elements, function (item, i) {
+            return item.setMap(null);
+          });
+        } else {
+          this.route.setMap(null);
+          DrawTheRoute.directionsDisplays.showAll();
+        }
+
+        this.draw();
+      },
+
       attachToRoad: function (param) {
-        if (param === undefined)
+        if (param === undefined) {
           return settings.attachToRoad;
-        else
+        } else {
           settings.attachToRoad = param;
+          this.toggleRoute(param);
+        }
       },
 
       drawLine: function() {
