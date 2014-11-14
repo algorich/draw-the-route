@@ -35,6 +35,32 @@
 
       map: map,
 
+      initializeSearchBox: function () {
+        // Create the search box and link it to the UI element.
+        var input = document.getElementById('pac-input');
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+        var searchBox = new google.maps.places.SearchBox(input);
+
+        // Listen for the event fired when the user selects an item from the
+        // pick list. Retrieve the matching places for that item.
+        google.maps.event.addListener(searchBox, 'places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          var bounds = new google.maps.LatLngBounds();
+
+          for (var i = 0, place; place = places[i]; i++) {
+            bounds.extend(place.geometry.location);
+          }
+
+          map.fitBounds(bounds);
+          map.setZoom(17)
+        });
+      },
+
       directionsService: new google.maps.DirectionsService(),
 
       directionsDisplays: {
@@ -288,10 +314,13 @@
       DrawTheRoute.draw();
     }());
 
+    DrawTheRoute.initializeSearchBox();
+
     google.maps.event.addListener(DrawTheRoute.map, 'click', function(e) {
       DrawTheRoute.nodes.push(e.latLng);
       DrawTheRoute.draw();
     });
+
 
     return DrawTheRoute;
   }; // $.fn.drawTheRoute
