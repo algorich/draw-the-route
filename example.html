@@ -71,6 +71,8 @@
 
       <button id="undo">Undo</button>
 
+      <button id="reset" type="button">Reset</button>
+
       <button id="export-data">Export data</button>
 
       <textarea cols='50' rows='3' id="agl-exported-data"></textarea>
@@ -94,6 +96,12 @@
 
         $('#undo').on('click', function () {
           dtr.undo();
+        });
+
+        $("#reset").on("click", function(e) {
+          var response = confirm('Are you sure?');
+
+          if(response) dtr.resetResources();
         });
 
         $('#export-data').on('click', function () {

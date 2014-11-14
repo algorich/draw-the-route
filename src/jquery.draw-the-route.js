@@ -282,7 +282,6 @@
         };
 
         DrawTheRoute.directionsService.route(request, function(result, status) {
-          console.log(status);
           if (status === google.maps.DirectionsStatus.OK) {
             DrawTheRoute.directionsDisplays.elements[i].setDirections(result);
           }
