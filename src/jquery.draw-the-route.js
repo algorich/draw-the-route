@@ -35,6 +35,13 @@
 
       map: map,
 
+      resetResources: function () {
+        this.directionsDisplays.destroyAll();
+        this.waypoints.destroyAll();
+        this.markers.clean();
+        this.nodes.destroyAll();
+      },
+
       initializeSearchBox: function () {
         // Create the search box and link it to the UI element.
         var input = document.getElementById('pac-input');
@@ -56,8 +63,9 @@
             bounds.extend(place.geometry.location);
           }
 
+          DrawTheRoute.resetResources();
           map.fitBounds(bounds);
-          map.setZoom(17)
+          map.setZoom(17);
         });
       },
 
@@ -90,6 +98,14 @@
           display.setMap(DrawTheRoute.map);
           this.elements.push(display);
         },
+
+        destroyAll: function () {
+          $.each(this.elements, function (i, display) {
+            display.setMap(null)
+          });
+
+          this.elements = [];
+        }
       },
 
       waypoints: {
@@ -127,6 +143,11 @@
           }
 
           return waypoint;
+        },
+
+        destroyAll: function () {
+          this.elements = [];
+          this.count    = [];
         }
       },
 
@@ -166,7 +187,7 @@
             this.create(DrawTheRoute.nodes.first(), this.icons.start);
             this.create(DrawTheRoute.nodes.last(), this.icons.end);
           }
-        },
+        }
       },
 
       nodes: {
@@ -203,6 +224,10 @@
           return $.map(this.all(), function (node) {
             return [[node.k, node.B]];
           });
+        },
+
+        destroyAll: function () {
+          this.elements = [];
         }
       },
 
