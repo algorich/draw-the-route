@@ -279,6 +279,7 @@
           }),
           travelMode: google.maps.TravelMode.WALKING,
           unitSystem: google.maps.UnitSystem.IMPERIAL
+          unitSystem: google.maps.UnitSystem.METRIC
         };
 
         DrawTheRoute.directionsService.route(request, function(result, status) {
