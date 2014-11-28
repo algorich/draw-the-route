@@ -76,6 +76,8 @@
       <button id="export-data">Export data</button>
 
       <textarea cols='50' rows='3' id="agl-exported-data"></textarea>
+
+      <span id='traveledDistance'></span>
     </div>
 
     <script type="text/javascript">
@@ -106,6 +108,10 @@
 
         $('#export-data').on('click', function () {
           $('#agl-exported-data').text(JSON.stringify(dtr.exportData()));
+        });
+
+        $('#map_canvas').on('click', function () {
+          $('#traveledDistance').text('Distancia: ' + dtr.traveledDistance() + 'm');
         });
       });
     </script>

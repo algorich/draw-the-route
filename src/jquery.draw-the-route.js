@@ -32,8 +32,18 @@
 
     var DrawTheRoute = {
       settings: settings,
-
+      traveledDistances: [],
       map: map,
+
+      traveledDistance: function () {
+        var totalDistance = 0;
+
+        $.each(this.traveledDistances, function (i, distance) {
+          return totalDistance += distance;
+        });
+
+        return totalDistance;
+      },
 
       resetResources: function () {
         this.directionsDisplays.destroyAll();
@@ -278,13 +288,13 @@
             return { location: waypoint, stopover: false };
           }),
           travelMode: google.maps.TravelMode.WALKING,
-          unitSystem: google.maps.UnitSystem.IMPERIAL
           unitSystem: google.maps.UnitSystem.METRIC
         };
 
         DrawTheRoute.directionsService.route(request, function(result, status) {
           if (status === google.maps.DirectionsStatus.OK) {
             DrawTheRoute.directionsDisplays.elements[i].setDirections(result);
+            DrawTheRoute.traveledDistances[i] = result.routes[0].legs[0].distance.value;
           }
         });
       },
@@ -345,7 +355,6 @@
       DrawTheRoute.nodes.push(e.latLng);
       DrawTheRoute.draw();
     });
-
 
     return DrawTheRoute;
   }; // $.fn.drawTheRoute
