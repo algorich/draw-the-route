@@ -1,114 +1,75 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <style type="text/css">
-      #map_canvas { height: 100% }
-
-      html, body, #map-canvas {
-        height: 100%;
-        margin: 0px;
-        padding: 0px
-      }
-      .controls {
-        margin-top: 16px;
-        border: 1px solid transparent;
-        border-radius: 2px 0 0 2px;
-        box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        height: 32px;
-        outline: none;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-
-      #pac-input {
-        background-color: #fff;
-        padding: 0 11px 0 13px;
-        width: 400px;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        text-overflow: ellipsis;
-      }
-
-      #pac-input:focus {
-        border-color: #4d90fe;
-        margin-left: -1px;
-        padding-left: 14px;  /* Regular padding-left + 1. */
-        width: 401px;
-      }
-
-      .pac-container {
-        font-family: Roboto;
-      }
-
-      #type-selector {
-        color: #fff;
-        background-color: #4d90fe;
-        padding: 5px 11px 0px 11px;
-      }
-
-      #type-selector label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }
-    </style>
-    </script>
-    <script type="text/javascript" src="http://algorich.com.br/draw-the-route/jquery.js"> </script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
-    <script type="text/javascript" src="http://algorich.com.br/draw-the-route/jquery.draw-the-route.min.js"> </script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" type="text/css" href="assets/page.css">
+    <link rel="stylesheet" type="text/css" href="vendor/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/assets/css/stylish-portfolio.css">
+    <link href="vendor/assets/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
   </head>
 
   <body>
-    <input id='pac-input' class='controls' type='text' placeholder='Search Box'>
-    <div id='map_canvas' style='width:100%; height:80%'></div>
+    <!-- Navigation -->
+    <a id="menu-toggle" href="#" class="btn btn-dark btn-lg toggle"><i class="fa fa-bars"></i></a>
+    <nav id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <a id="menu-close" href="#" class="btn btn-light btn-lg pull-right toggle"><i class="fa fa-times"></i></a>
+            <li class="sidebar-brand">
+                <a href="#top">Menu</a>
+            </li>
+            <li>
+                <a href="#top">Início</a>
+            </li>
+            <li>
+                <a href="#draw-the-route">Draw The Route</a>
+            </li>
+        </ul>
+    </nav>
 
-    <div id='controls' style='padding: 20px;'>
-      <button id="close-route">Close route</button>
+    <!-- Header -->
+    <header id="top" class="header">
+        <div class="text-vertical-center">
+            <h1>Draw The Route</h1>
+            <h3>Mapeie suas rotas de corrida de maneira simples e rápida</h3>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <a href="#draw-the-route" class="btn btn-dark btn-lg">Começar</a>
+        </div>
+    </header>
 
-      <label for="attach_to_road">Attach to road</label>
-      <input type="checkbox" id="attach-to-road">
+    <!-- Map -->
+    <section id="draw-the-route" class="map">
+      <input id='pac-input' class='main-placeholder' type='text' placeholder='Search Box'>
 
-      <button id="undo">Undo</button>
+      <div id='map_canvas'></div>
+      <div id='dtr-options' style='padding: 20px;'>
+        <label for="attach_to_road">Attach to road</label>
+        <input type="checkbox" id="attach-to-road">
 
-      <button id="reset" type="button">Reset</button>
+        <button class='btn btn-dark' id="close-route">Close route</button>
 
-      <button id="export-data">Export data</button>
 
-      <textarea cols='50' rows='3' id="agl-exported-data"></textarea>
-    </div>
+        <button class='btn btn-dark' id="undo">Undo</button>
 
-    <script type="text/javascript">
-      $(function () {
-        'use strict';
+        <button class='btn btn-dark' id="reset" type="button">Reset</button>
 
-        var dtr = $('#map_canvas').drawTheRoute();
+        <!-- <button class='btn btn-dark' id="export-data">Export data</button> -->
+        <!-- <textarea cols='50' rows='3' id="agl-exported-data"></textarea> -->
+      </div>
+    </section>
 
-        $('#close-route').on('click', function () {
-          dtr.closeRoute();
-        });
-
-        $('#attach-to-road').prop('checked', dtr.attachToRoad());
-
-        $('#attach-to-road').on('change', function () {
-          dtr.attachToRoad(this.checked);
-        });
-
-        $('#undo').on('click', function () {
-          dtr.undo();
-        });
-
-        $("#reset").on("click", function(e) {
-          var response = confirm('Are you sure?');
-
-          if(response) dtr.resetResources();
-        });
-
-        $('#export-data').on('click', function () {
-          $('#agl-exported-data').text(JSON.stringify(dtr.exportData()));
-        });
-      });
-    </script>
+    <script type="text/javascript" src="http://algorich.com.br/draw-the-route/jquery.js"> </script>
+    <script type="text/javascript" src="assets/page.js"> </script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+    <script type="text/javascript" src="http://algorich.com.br/draw-the-route/jquery.draw-the-route.min.js"> </script>
+    <script type="text/javascript" src="assets/dtr-setup.js"></script>
   </body>
 </html>
